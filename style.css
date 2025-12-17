@@ -62,29 +62,36 @@ body{
 	padding:clamp(1rem,6vw,3rem);
 	backdrop-filter:blur(2px); /* subtle separation */
 }
-
-/* logo (enters slowly from top edge) */
+/* logo */
 .band-logo{
 	display:inline-block;
-    border-radius: 20%;
-    margin-top: 10rem;
+	border-radius: 20%;
+	margin-top: 10rem;
 	max-width:min(56vw,420px);
 	width:clamp(200px,36vw,420px);
 	height:auto;
 	opacity:0;
-	animation: logoDrop 1.1s cubic-bezier(.2,.8,.2,1) forwards;
-	animation-delay:3s;
+	animation: logoReveal 4s cubic-bezier(.16,.84,.44,1) forwards;
+	animation-delay:2.8s;
+	filter: drop-shadow(0 20px 40px rgba(0,0,0,.3));
+	will-change: transform, opacity;
 }
 
-/* slow drop from top */
-@keyframes logoDrop{
-	from{
+/* ANIMATION: smooth reveal with subtle scale and glow */
+@keyframes logoReveal{
+	0%{
 		opacity:0;
-		transform:translateY(-40px) scale(.98);
+		transform:translateY(-50px) scale(.92);
+		filter: drop-shadow(0 20px 40px rgba(142,224,138,.0));
 	}
-	to{
-		opacity:0.75;
+	60%{
+		opacity:0.8;
+		transform:translateY(8px) scale(1.02);
+	}
+	100%{
+		opacity:0.9;
 		transform:translateY(0) scale(1);
+		filter: drop-shadow(0 20px 40px rgba(142,224,138,.15));
 	}
 }
 
