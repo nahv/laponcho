@@ -3,7 +3,6 @@
 (function(){
 	// Cache nodes
 	const reveals = document.querySelectorAll('.reveal');
-	const socials = document.querySelectorAll('.social');
 	const parallaxEls = document.querySelectorAll('[data-speed]');
 	const mobileVideo = document.querySelector('.video--mobile');
 	const desktopVideo = document.querySelector('.video--desktop');
@@ -69,19 +68,10 @@
 		mql.addListener(setVideoForViewport);
 	}
 
-	// Animate social icons: appear at 1.5s (logo animation starts at 1s via CSS),
-	// scroll widget becomes visible at 2s.
-	setTimeout(()=> {
-		requestAnimationFrame(()=> {
-			socials.forEach((el, i) => {
-				setTimeout(()=> el.classList.add('visible'), i * 140);
-			});
-		});
-	}, 8000); // 1.5s
-
+	// Scroll widget becomes visible at 2s (breathing animation handled by CSS)
 	setTimeout(()=>{
 		if(scrollWidget) scrollWidget.classList.add('visible');
-	}, 8000); // 2s
+	}, 30000);
 
 	// Lightweight parallax using requestAnimationFrame (reads minimal DOM)
 	let lastY = window.scrollY;
