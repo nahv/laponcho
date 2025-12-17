@@ -1,0 +1,275 @@
+@import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
+
+/* Base / mobile-first */
+:root{
+	--bg:#071019;
+	--accent:#8ee08a;
+	--muted:#bfc8c6;
+	--max-width:1100px;
+	--hero-height:100vh;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+	margin:0;
+	font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+	color:var(--muted);
+	background:var(--bg);
+	-webkit-font-smoothing:antialiased;
+	-moz-osx-font-smoothing:grayscale;
+	animation: pageLoadFade 1s ease-out forwards;
+}
+
+/* Page load fade-in from black */
+@keyframes pageLoadFade{
+	from{opacity:0;background:#000}
+	to{opacity:1;background:var(--bg)}
+}
+
+/* Hero */
+.hero{
+	position:relative;
+	min-height:var(--hero-height);
+	overflow:hidden;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+}
+
+/* Video animation: delay reveal until 1s */
+.video{
+	position:absolute;
+	inset:0;
+	width:100%;
+	height:100%;
+	object-fit:cover;
+	filter:contrast(.95) saturate(1.05) brightness(.9);
+	pointer-events:none;
+	animation: videoReveal 1s ease-in forwards;
+}
+
+@keyframes videoReveal{
+	from{opacity:0}
+	to{opacity:1}
+}
+
+/* Overlay content */
+.hero__overlay{
+	position:relative;
+	z-index:2;
+	text-align:center;
+	padding:clamp(1rem,6vw,3rem);
+	backdrop-filter:blur(2px); /* subtle separation */
+}
+
+/* logo (enters slowly from top edge) */
+.band-logo{
+	display:inline-block;
+    border-radius: 20%;
+	max-width:min(56vw,420px);
+	width:clamp(180px,36vw,420px);
+	height:auto;
+	opacity:1;
+	transform:translateY(-40px);
+	animation: logoDrop 1.1s cubic-bezier(.2,.8,.2,1) forwards;
+	animation-delay:4s; /* starts after 1s of video as requested */
+}
+
+/* slow drop from top */
+@keyframes logoDrop{
+	from{
+		opacity:0;
+		transform:translateY(-40px) scale(.98);
+	}
+	to{
+		opacity:1;
+		transform:translateY(0) scale(1);
+	}
+}
+
+/* Social CTA */
+.hero__social{
+	margin-top:1.25rem;
+	display:flex;
+	gap:1rem;
+	justify-content:center;
+}
+.social{
+	display:inline-flex;
+	width:56px;
+	height:56px;
+	border-radius:12px;
+	align-items:center;
+	justify-content:center;
+	background:rgba(255,255,255,.06);
+	transition:transform .45s cubic-bezier(.2,.9,.2,1), opacity .45s;
+	opacity:0;
+	transform:translateY(10px) scale(.98);
+	text-decoration:none;
+}
+
+/* ensure social icons are pure images (no filters applied) */
+.social img{width:28px;height:28px;display:block;}
+
+/* visible state toggled by JS - social icons triggered at 1.5s */
+.social.visible{
+	opacity:1;
+	transform:translateY(0) scale(1);
+	animation: socialSlideIn .5s cubic-bezier(.2,.9,.2,1) forwards;
+}
+
+@keyframes socialSlideIn{
+	from{
+		opacity:0;
+		transform:translateY(10px) scale(.98)
+	}
+	to{
+		opacity:1;
+		transform:translateY(0) scale(1)
+	}
+}
+
+/* New scroll-down widget */
+#scroll-down{
+	display:block;
+	position:relative;
+	margin-top  :35rem;
+	text-align:center;
+	opacity:0;
+	transition:opacity .25s ease;
+	pointer-events:none;
+}
+#scroll-down.visible{opacity:1; pointer-events:none;}
+
+.arrow-down{
+	display:block;
+	margin:0 auto;
+	width:10px;
+	height:38px;
+}
+.arrow-down:after{
+	content:'';
+	display:block;
+	margin:0;
+	padding:0;
+	width:8px;
+	height:8px;
+	border-top:2px solid #b91a2f;
+	border-right:2px solid #b91a2f;
+	-moz-transform:rotate(135deg);
+	-webkit-transform:rotate(135deg);
+	-o-transform:rotate(135deg);
+	-ms-transform:rotate(135deg);
+	transform:rotate(135deg);
+}
+
+#scroll-title{
+	display:block;
+	text-transform:uppercase;
+	color:hsl(352, 75%, 41%);
+	font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+	font-size:14px;
+	font-weight:bold;
+	letter-spacing:.1em;
+	margin-bottom:10px;
+}
+
+
+
+/* elasticus keyframes (copied/adapted from snippet) */
+@keyframes elasticus {
+    0% { transform-origin:0% 0%; transform:scale(1,0); }
+    50% { transform-origin:0% 0%; transform:scale(1,1); }
+    50.1% { transform-origin:0% 100%; transform:scale(1,1); }
+    100% { transform-origin:0% 100%; transform:scale(1,0); }
+}
+
+/* Panels (scrollytelling) */
+.container{max-width:var(--max-width);margin:0 auto;padding:2rem;}
+.panel{
+	min-height:60vh;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	padding:4rem 1rem;
+	position:relative;
+	overflow:hidden;
+}
+
+/* Chess-like pattern backgrounds for panels */
+.panel::before{
+	content:'';
+	position:absolute;
+	inset:0;
+	background-image:
+		repeating-linear-gradient(
+			45deg,
+			rgba(142,224,138,.04) 0,
+			rgba(142,224,138,.04) 20px,
+			transparent 20px,
+			transparent 40px
+		),
+		repeating-linear-gradient(
+			-45deg,
+			rgba(142,224,138,.04) 0,
+			rgba(142,224,138,.04) 20px,
+			transparent 20px,
+			transparent 40px
+		);
+	pointer-events:none;
+	z-index:0;
+}
+
+.panel > .container{
+	position:relative;
+	z-index:1;
+}
+
+/* reveal default: slightly down and transparent */
+.reveal{
+	opacity:0;
+	transform:translateY(18px);
+	transition:opacity .6s ease, transform .6s ease;
+}
+
+/* in-view when IntersectionObserver toggles */
+.reveal.in-view{
+	opacity:1;
+	transform:translateY(0);
+}
+
+/* subtle color blocks and ska font */
+.panel:nth-child(odd){background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);}
+.panel h2{
+	color:#fff;
+	margin:0 0 .5rem;
+	font-family:'Righteous',cursive;
+	font-size:clamp(1.75rem,5vw,3rem);
+	letter-spacing:0.05em;
+	text-transform:uppercase;
+}
+.panel p{max-width:60ch;color:var(--muted);line-height:1.6}
+
+/* Alternate panel styling for visual interest */
+.panel:nth-child(even) h2{color:var(--accent)}
+.panel:nth-child(3n) h2{transform:skewX(-5deg)}
+
+/* Footer */
+.site-footer{padding:1.5rem 1rem;text-align:center;color:#8f9ea2;font-size:.9rem}
+
+/* Desktop / larger screens */
+@media (min-width:900px){
+	.hero{min-height:100vh}
+	.video--desktop{display:block}
+	.video--mobile{display:none}
+	.hero__overlay{max-width:900px}
+	.hero__social .social{width:64px;height:64px}
+	.hero__social .social img{width:32px;height:32px}
+}
+
+/* Accessibility: focus states */
+a:focus{outline:3px solid rgba(142,224,138,.18);outline-offset:3px}
+
+/* Utility: data-driven parallax elements can transition smoothly */
+[data-parallax]{transition:transform .12s linear}

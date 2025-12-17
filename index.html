@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>Poncho Verde Ska Orquesta</title>
+	<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+	<header class="site-header" role="banner">
+	</header>
+
+	<main>
+		<section class="hero" id="hero" aria-label="Poncho Verde Ska Orquesta hero">
+			<!-- Mobile vertical video: keep data-src so it only loads when we set it via JS -->
+			<video
+				class="video video--mobile"
+				data-src="assets/videos/mobile.mp4"
+				poster="assets/videos/mobile-poster.jpg"
+				playsinline muted autoplay loop preload="metadata"
+				aria-hidden="true"
+			></video>
+
+			<!-- Desktop horizontal video: data-src set, preload none until activated -->
+			<video
+				class="video video--desktop"
+				data-src="assets/videos/desktop.mp4"
+				poster="assets/videos/desktop-poster.jpg"
+				playsinline muted autoplay loop preload="none"
+				aria-hidden="true"
+			></video>
+
+			<div class="hero__overlay">
+				<!-- logo image appears slowly from the top (replaces band-name) -->
+				<img class="band-logo" src="assets/icons/logo.png" alt="Poncho Verde logo" />
+
+				<nav class="hero__social" aria-label="Social links">
+					<a class="social social--ig" href="https://instagram.com/your_band" target="_blank" rel="noopener" aria-label="Instagram">
+						<img src="assets/icons/instagram.png" alt="Instagram" role="img" />
+					</a>
+					<a class="social social--wa" href="https://wa.me/1234567890" target="_blank" rel="noopener" aria-label="WhatsApp">
+						<img src="assets/icons/whatsapp.png" alt="WhatsApp" role="img" />
+					</a>
+				</nav>
+
+				<!--  scroll-down widget -->
+				<div id="scroll-down" aria-hidden="true">
+					<span id="scroll-title">Scroll</span>
+					<span class="arrow-down" aria-hidden="true"></span>
+				</div>
+			</div>
+		</section>
+
+		<!-- Scrollytelling demo sections -->
+		<section class="panel reveal" id="panel-1" data-speed="0.2">
+			<div class="container">
+				<h2>About</h2>
+				<p><strong>La Poncho Verde Ska Orquesta</strong> nace en Corrientes, Argentina, donde el calor no se discute y el ritmo se aprende antes que a caminar. 
+                    <br>
+                    <br>
+                    Entre botellas, el río y las veredas que piden baile, esta orquesta armó su propio clima: viento, groove y alegría bien puesta.
+<br>
+<br>
+Somos una orquesta de ska y reggae con más aire que discurso: saxos, trompetas, trombones y algún viento más que aparece cuando menos lo esperás. 
+<br>
+A eso se suman contrabajo, batería, guitarra eléctrica y teclados,<strong> todos conspirando para que tu cuerpo se mueva incluso cuando la cabeza dice “mañana trabajo”.</strong>
+<br>
+<br>
+Nos gusta el pulso jamaiquino, pero con acento del litoral. 
+<br>
+<br>
+Tocamos para bailar, para sonreír y para que la noche dure un poco más de lo planeado. No prometemos salvar al mundo, pero sí hacerte transpirar con estilo y sacarte al menos una preocupación durante el show.</p>
+			</div>
+		</section>
+
+		<section class="panel reveal" id="panel-2" data-speed="0.15">
+			<div class="container">
+				<h2>Music</h2>
+				<p>More placeholder text. Structure is ready for tracks, embeds, or tour dates.</p>
+			</div>
+		</section>
+
+		<section class="panel reveal" id="panel-3" data-speed="0.1">
+			<div class="container">
+				<h2>Contact</h2>
+				<p>Contact CTA and booking info can go here.</p>
+			</div>
+		</section>
+	</main>
+
+	<footer class="site-footer" role="contentinfo">
+		<div class="container">
+			<small>© Poncho Verde Ska Orquesta</small>
+		</div>
+	</footer>
+
+	<script src="main.js" defer></script>
+</body>
+</html>
