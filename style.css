@@ -60,7 +60,6 @@ body{
 	z-index:2;
 	text-align:center;
 	padding:clamp(1rem,6vw,3rem);
-	backdrop-filter:blur(2px); /* subtle separation */
 }
 /* logo */
 .band-logo{
