@@ -66,7 +66,7 @@ body{
 .band-logo{
 	display:inline-block;
 	border-radius: 20%;
-	margin-bottom: 10rem;
+	margin-bottom: 20rem;
 	max-width:min(56vw,420px);
 	width:clamp(200px,36vw,420px);
 	height:auto;
