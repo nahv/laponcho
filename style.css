@@ -18,7 +18,7 @@ body{
 	background:var(--bg);
 	-webkit-font-smoothing:antialiased;
 	-moz-osx-font-smoothing:grayscale;
-	animation: pageLoadFade 1s ease-out forwards;
+	animation: pageLoadFade 3s ease-out forwards;
 }
 
 /* Page load fade-in from black */
@@ -141,7 +141,7 @@ body{
 #scroll-down{
 	display:block;
 	position:relative;
-	margin-top:10rem;
+	margin-top:5rem;
 	text-align:center;
 	opacity:0;
 	animation: breathe 3s ease-in-out infinite;
