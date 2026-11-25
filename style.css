@@ -1,342 +1,381 @@
-@import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
+/* La Poncho Verde Ska Orquesta — app-like hero + sheets.
+   El CSS crítico del loader está inline en index.html. */
 
-/* Base / mobile-first */
 :root{
-	--bg:#071019;
-	--accent:#8ee08a;
-	--muted:#bfc8c6;
-	--max-width:1100px;
-	--hero-height:100vh;
+	--black:#000;
+	--ink:#0b0d0b;
+	--green:#1f7a45;
+	--green-soft:rgba(31,122,69,.18);
+	--gold:#e0a526;
+	--white:#f5f3ee;
+	--muted:#c9cfc9;
+	--radius:22px;
+	--ease-out:cubic-bezier(.2,.9,.2,1);
+	--font-display:'Righteous',system-ui,sans-serif;
+	--font-body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+	--checks:conic-gradient(var(--white) 25%,var(--black) 0 50%,var(--white) 0 75%,var(--black) 0) 0 0/16px 16px;
 }
 
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
 	margin:0;
-	font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+	font-family:var(--font-body);
 	color:var(--muted);
-	background:var(--bg);
+	background:var(--black);
 	-webkit-font-smoothing:antialiased;
 	-moz-osx-font-smoothing:grayscale;
-	animation: pageLoadFade 3s ease-out forwards;
+	overflow:hidden; /* todo vive en una pantalla; el scroll está dentro de las hojas */
+	-webkit-tap-highlight-color:transparent;
 }
 
-/* Page load fade-in from black */
-@keyframes pageLoadFade{
-	from{opacity:0;background:#000}
-	to{opacity:1;background:var(--bg)}
-}
-
-/* Hero */
+/* ---------- Hero ---------- */
 .hero{
 	position:relative;
-	min-height:var(--hero-height);
+	height:100vh;
+	height:100dvh;
 	overflow:hidden;
-	display:flex;
-	align-items:center;
-	justify-content:center;
+	display:grid;
+	grid-template-rows:1fr auto auto;
+	justify-items:center;
+	padding:
+		max(1rem,env(safe-area-inset-top))
+		max(1rem,env(safe-area-inset-right))
+		max(.75rem,env(safe-area-inset-bottom))
+		max(1rem,env(safe-area-inset-left));
 }
 
-/* Video animation: delay reveal until 1s */
-.video{
+.hero__video{
 	position:absolute;
-	inset:0;
+	top:0;right:0;bottom:0;left:0; /* no "inset": iOS < 14.1 */
 	width:100%;
 	height:100%;
 	object-fit:cover;
-	filter:contrast(.95) saturate(1.05) brightness(.9);
+	object-position:50% 45%;
+	background:#000 url("assets/videos/poster.jpg") center/cover no-repeat;
 	pointer-events:none;
-	animation: videoReveal 1s ease-in forwards;
+	/* al irse el loader, el video sube de negro a su color original */
+	transition:opacity 2s cubic-bezier(.4,0,.2,1) .15s;
+}
+.is-loading .hero__video{opacity:0}
+
+/* oscurece arriba (logo) y abajo (botones) sin tapar al escenario */
+.hero__scrim{
+	position:absolute;
+	top:0;right:0;bottom:0;left:0; /* no "inset": iOS < 14.1 */
+	pointer-events:none;
+	background:
+		linear-gradient(180deg,rgba(0,0,0,.55) 0%,transparent 28%),
+		linear-gradient(0deg,rgba(0,0,0,.8) 0%,rgba(0,0,0,.35) 22%,transparent 40%);
 }
 
-@keyframes videoReveal{
-	from{opacity:0}
-	to{opacity:1}
+.hero__top{
+	/* sin z-index: si crea stacking context, el mix-blend-mode del logo no ve el video */
+	position:relative;
+	align-self:start;
+	text-align:center;
+}
+.hero__title{margin:0;line-height:0}
+.hero__logo{
+	display:block;
+	width:min(52vw,260px);
+	height:auto;
+	/* el fondo negro del escudo desaparece sobre el video oscuro */
+	mix-blend-mode:lighten;
 }
 
-/* Overlay content */
-.hero__overlay{
+/* Entrada del logo y los botones cuando se va el loader */
+.hero__logo,.dock__btn,.video-toggle,.hero__footer small + small{margin-left:.75rem} /* margen en vez de flex gap (iOS < 14.1) */
+.hero__footer{
+	transition:opacity .7s var(--ease-out),transform .7s var(--ease-out);
+}
+.logo-pending .hero__logo{
+	opacity:0;
+	/* red de seguridad: si el JS no llega a "aterrizar" el escudo, aparece igual (como el loader a los 10 s) */
+	animation:logoFailsafe .7s ease 10s forwards;
+}
+@keyframes logoFailsafe{to{opacity:1}}
+/* el escudo del loader "vuela" hasta acá (ver flyLogo en main.js) */
+.logo-flyer{
+	position:fixed;
+	z-index:101; /* arriba del loader mientras este se desvanece */
+	margin:0;
+	pointer-events:none;
+	mix-blend-mode:lighten;
+	transform-origin:50% 90%; /* el mismo que .loader__logo */
+	will-change:transform;
+}
+.is-loading .dock__btn{opacity:0;transform:translateY(24px)}
+.is-loading .video-toggle,.is-loading .hero__footer{opacity:0}
+.dock__btn:nth-child(2){transition-delay:.08s}
+
+/* ---------- Dock (botones tipo app) ---------- */
+.dock{
 	position:relative;
 	z-index:2;
-	text-align:center;
-	padding:clamp(1rem,6vw,3rem);
-}
-/* logo */
-.band-logo{
-	display:inline-block;
-	border-radius: 20%;
-	margin-bottom: 20rem;
-	max-width:min(56vw,420px);
-	width:clamp(200px,36vw,420px);
-	height:auto;
-	opacity:0;
-	animation: logoReveal 4s cubic-bezier(.16,.84,.44,1) forwards;
-	animation-delay:2.8s;
-	filter: drop-shadow(0 20px 40px rgba(0,0,0,.3));
-	will-change: transform, opacity;
-}
-
-/* ANIMATION: smooth reveal with subtle scale and glow */
-@keyframes logoReveal{
-	0%{
-		opacity:0;
-		transform:translateY(-50px) scale(.92);
-		filter: drop-shadow(0 20px 40px rgba(142,224,138,.0));
-	}
-	60%{
-		opacity:0.8;
-		transform:translateY(8px) scale(1.02);
-	}
-	100%{
-		opacity:0.8;
-		transform:translateY(0) scale(1);
-		filter: drop-shadow(0 20px 40px rgba(142,224,138,.15));
-	}
-}
-
-/* Social CTA */
-.hero__social{
-	margin-top:1.25rem;
 	display:flex;
-	gap:1rem;
 	justify-content:center;
+	margin-bottom:1rem;
 }
-.social{
-	display:inline-flex;
-	width:56px;
-	height:56px;
-	border-radius:12px;
-	align-items:center;
-	justify-content:center;
-	background:rgba(255,255,255,.06);
-	transition:transform .45s cubic-bezier(.2,.9,.2,1), opacity .45s;
-	opacity:0;
-	transform:translateY(10px) scale(.98);
+.dock__btn + .dock__btn{margin-left:clamp(1.5rem,8vw,3rem)} /* margen en vez de flex gap (iOS < 14.1) */
+.dock__btn{
+	display:grid;
+	justify-items:center;
+	gap:.5rem;
 	text-decoration:none;
+	color:var(--white);
+	font:600 .85rem/1.2 var(--font-body);
+	letter-spacing:.02em;
+	text-shadow:0 1px 6px rgba(0,0,0,.7);
+	min-width:88px;
 }
-
-/* ensure social icons are pure images (no filters applied) */
-.social img{width:28px;height:28px;display:block;}
-
-/* visible state toggled by JS - social icons triggered at 1.5s */
-.social.visible{
-	opacity:1;
-	transform:translateY(0) scale(1);
-	animation: socialSlideIn .5s cubic-bezier(.2,.9,.2,1) forwards;
-}
-
-@keyframes socialSlideIn{
-	from{
-		opacity:0;
-		transform:translateY(10px) scale(.98)
-	}
-	to{
-		opacity:1;
-		transform:translateY(0) scale(1)
-	}
-}
-
-/* New scroll-down widget */
-#scroll-down{
-	display:block;
+.dock__icon{
 	position:relative;
-	margin-top:5rem;
-	text-align:center;
-	opacity:0;
-	animation: breathe 3s ease-in-out infinite;
-	animation-delay:6s;
-	pointer-events:none;
-}
-#scroll-down.visible{
-	animation: breathe 3s ease-in-out infinite;
-	animation-delay:0s;
-}
-
-/* breathing effect: continuous fade in/out */
-@keyframes breathe {
-	0% { opacity:0.3; }
-	50% { opacity:0.8; }
-	100% { opacity:0.3; }
-}
-
-.arrow-down{
-	display:block;
-	margin:0 auto;
-	width:10px;
-	height:38px;
-}
-.arrow-down:after{
-	content:'';
-	display:block;
-	margin:0;
-	padding:0;
-	width:8px;
-	height:8px;
-	border-top:2px solid #b91a2f;
-	border-right:2px solid #b91a2f;
-	-moz-transform:rotate(135deg);
-	-webkit-transform:rotate(135deg);
-	-o-transform:rotate(135deg);
-	-ms-transform:rotate(135deg);
-	transform:rotate(135deg);
-}
-
-#scroll-title{
-	display:block;
-	text-transform:uppercase;
-	color:hsl(352, 75%, 41%);
-	font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
-	font-size:14px;
-	font-weight:bold;
-	letter-spacing:.1em;
-	margin-bottom:10px;
-}
-
-
-
-/* elasticus keyframes (copied/adapted from snippet) */
-@keyframes elasticus {
-    0% { transform-origin:0% 0%; transform:scale(1,0); }
-    50% { transform-origin:0% 0%; transform:scale(1,1); }
-    50.1% { transform-origin:0% 100%; transform:scale(1,1); }
-    100% { transform-origin:0% 100%; transform:scale(1,0); }
-}
-
-/* Panels (scrollytelling) */
-.container{max-width:var(--max-width);margin:0 auto;padding:2rem;}
-.panel{
-	min-height:60vh;
-	display:flex;
-	align-items:center;
-	justify-content:center;
-	padding:4rem 1rem;
-	position:relative;
+	display:grid;
+	place-items:center;
+	width:68px;
+	height:68px;
+	border-radius:20px;
+	background:linear-gradient(160deg,#2a9a5a,var(--green) 55%,#155532);
+	box-shadow:
+		0 10px 24px rgba(0,0,0,.45),
+		inset 0 1px 0 rgba(255,255,255,.25);
 	overflow:hidden;
+	transition:transform .25s var(--ease-out);
 }
-
-/* Chess-like pattern backgrounds for panels */
-.panel::before{
+/* tira de damero ska al pie de cada ícono */
+.dock__icon::after{
 	content:'';
 	position:absolute;
-	inset:0;
-	background-image:
-		repeating-linear-gradient(
-			45deg,
-			rgba(142,224,138,.04) 0,
-			rgba(142,224,138,.04) 20px,
-			transparent 20px,
-			transparent 40px
-		),
-		repeating-linear-gradient(
-			-45deg,
-			rgba(142,224,138,.04) 0,
-			rgba(142,224,138,.04) 20px,
-			transparent 20px,
-			transparent 40px
-		);
-	pointer-events:none;
-	z-index:0;
+	left:0;right:0;bottom:0;
+	height:8px;
+	background:conic-gradient(var(--white) 25%,var(--black) 0 50%,var(--white) 0 75%,var(--black) 0) 0 0/8px 8px;
+	opacity:.9;
 }
+.dock__icon svg{
+	width:32px;height:32px;
+	margin-bottom:6px;
+	fill:none;
+	stroke:var(--white);
+	stroke-width:1.9;
+	stroke-linecap:round;
+	stroke-linejoin:round;
+}
+.dock__btn[data-sheet="contacto"] .dock__icon{
+	background:linear-gradient(160deg,#f0bb43,var(--gold) 55%,#b07d12);
+}
+.dock__btn[data-sheet="contacto"] .dock__icon svg{stroke:var(--black)}
+.dock__btn[data-sheet="contacto"] .dock__icon circle{fill:var(--black)}
+.dock__btn:active .dock__icon{transform:scale(.92)}
+@media (hover:hover){
+	.dock__btn:hover .dock__icon{transform:translateY(-3px) rotate(-3deg)}
+}
+.dock__btn:focus-visible{outline:none}
+.dock__btn:focus-visible .dock__icon{outline:3px solid var(--gold);outline-offset:4px}
 
-.panel > .container{
+.hero__footer{
 	position:relative;
-	z-index:1;
+	z-index:2;
+	display:flex;
+	justify-content:center;
+	color:rgba(245,243,238,.55);
+	font-size:.72rem;
 }
 
-/* reveal default: slightly down and transparent */
-.reveal{
+/* Pausa / play del video (accesibilidad: todo lo que se mueve se puede frenar) */
+.video-toggle{
+	position:absolute;
+	z-index:3;
+	top:max(1rem,env(safe-area-inset-top));
+	right:max(1rem,env(safe-area-inset-right));
+	width:40px;height:40px;
+	display:grid;place-items:center;
+	padding:0;
+	border:1px solid rgba(245,243,238,.25);
+	border-radius:50%;
+	background:rgba(0,0,0,.45);
+	color:var(--white);
+	cursor:pointer;
+}
+.video-toggle svg{width:18px;height:18px;fill:currentColor}
+.video-toggle .icon-play{display:none}
+.video-toggle[aria-pressed="true"] .icon-play{display:block}
+.video-toggle[aria-pressed="true"] .icon-pause{display:none}
+.video-toggle:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+
+/* ---------- Hojas (dialog) ---------- */
+.sheet{
+	/* el <dialog> ocupa toda la pantalla; el panel es lo que se ve */
+	position:fixed;
+	top:0;right:0;bottom:0;left:0; /* no "inset": iOS < 14.1 */
+	width:100%;
+	height:100%;
+	max-width:none;
+	max-height:none;
+	margin:0;
+	padding:0;
+	border:0;
+	background:transparent;
+	color:var(--muted);
+	overflow:hidden;
+}
+/* Safari < 15.4 no conoce <dialog>: lo mostraría siempre. Lo ocultamos hasta que tenga [open]
+   y le damos fondo oscuro propio, porque ahí tampoco existe ::backdrop. */
+.sheet:not([open]){display:none}
+.sheet--fallback{
+	z-index:50;
+	background:rgba(0,0,0,0);
+	transition:background .3s ease;
+}
+.sheet--fallback.is-open{background:rgba(0,0,0,.6)}
+.sheet::backdrop{
+	background:rgba(0,0,0,.6);
 	opacity:0;
-	transform:translateY(18px);
-	transition:opacity .6s ease, transform .6s ease;
+	transition:opacity .3s ease;
 }
+.sheet.is-open::backdrop{opacity:1}
 
-/* in-view when IntersectionObserver toggles */
-.reveal.in-view{
-	opacity:1;
-	transform:translateY(0);
+.sheet__panel{
+	position:absolute;
+	left:0;right:0;bottom:0;
+	max-height:88vh;
+	max-height:88dvh;
+	display:flex;
+	flex-direction:column;
+	background:var(--ink);
+	border-radius:var(--radius) var(--radius) 0 0;
+	box-shadow:0 -20px 60px rgba(0,0,0,.6);
+	transform:translateY(100%);
+	transition:transform .38s var(--ease-out);
+	overflow:hidden;
+	will-change:transform;
 }
+/* damero ska arriba del panel */
+.sheet__panel::before{
+	content:'';
+	flex:none;
+	height:16px;
+	background:var(--checks);
+}
+.sheet.is-open .sheet__panel{transform:translateY(0)}
+.sheet.is-dragging .sheet__panel{transition:none}
 
-/* subtle color blocks and ska font */
-.panel:nth-child(odd){background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);}
-.panel h2{
-	color:#fff;
-	margin:0 0 .5rem;
-	font-family:'Righteous',cursive;
-	font-size:clamp(1.75rem,5vw,3rem);
-	letter-spacing:0.05em;
+.sheet__head{
+	position:relative;
+	flex:none;
+	padding:.6rem 3.5rem .75rem;
+	text-align:center;
+	touch-action:none; /* se arrastra con el dedo */
+	cursor:grab;
+	-webkit-user-select:none;
+	user-select:none;
+}
+.sheet__grabber{
+	display:block;
+	width:40px;height:5px;
+	margin:0 auto .6rem;
+	border-radius:3px;
+	background:rgba(245,243,238,.3);
+}
+.sheet__title{
+	margin:0;
+	color:var(--gold);
+	font-family:var(--font-display);
+	font-weight:400;
+	font-size:clamp(1.5rem,6vw,2.1rem);
+	letter-spacing:.05em;
 	text-transform:uppercase;
 }
-.panel p{max-width:60ch;color:var(--muted);line-height:1.6}
+.sheet__close{
+	position:absolute;
+	top:.9rem;right:.9rem;
+	width:40px;height:40px;
+	display:grid;place-items:center;
+	padding:0;
+	border:0;
+	border-radius:50%;
+	background:rgba(245,243,238,.08);
+	color:var(--white);
+	cursor:pointer;
+}
+.sheet__close svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+.sheet__close:hover{background:rgba(245,243,238,.16)}
+.sheet__close:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 
-/* Alternate panel styling for visual interest */
-.panel:nth-child(even) h2{color:var(--accent)}
-.panel:nth-child(3n) h2{transform:skewX(-5deg)}
+.sheet__body{
+	flex:1 1 auto;
+	overflow-y:auto;
+	overscroll-behavior:contain;
+	-webkit-overflow-scrolling:touch;
+	padding:.25rem 1.5rem calc(2rem + env(safe-area-inset-bottom));
+	line-height:1.65;
+	font-size:1.02rem;
+}
+.sheet__body p{margin:0 0 1rem;max-width:62ch}
+.sheet__body strong{color:var(--white)}
+.sheet__body--center{text-align:center}
+.sheet__body--center p{margin-inline:auto}
 
-/* Footer */
-.site-footer{padding:1.5rem 1rem;text-align:center;color:#8f9ea2;font-size:.9rem}
-
-/* Contact section social icons (large app-icon style) */
+/* Íconos de redes, estilo app */
 .contact__social{
 	display:flex;
-	gap:2rem;
 	justify-content:center;
 	flex-wrap:wrap;
-	margin-top:2rem;
+	margin:1.5rem 0 0;
 }
-
 .social-icon{
-	display:inline-flex;
-	width:100px;
-	height:100px;
-	border-radius:20px;
-	align-items:center;
-	justify-content:center;
-	background:rgba(142,224,138,.08);
-	transition:transform .3s cubic-bezier(.2,.9,.2,1), background .3s ease;
+	margin:0 .5rem 1rem; /* margen en vez de flex gap (iOS < 14.1) */
+	display:grid;
+	justify-items:center;
+	gap:.5rem;
+	color:var(--white);
 	text-decoration:none;
-	border:2px solid rgba(142,224,138,.2);
+	font-size:.85rem;
+	font-weight:600;
 }
-
 .social-icon img{
-	width:56px;
-	height:56px;
-	display:block;
+	box-sizing:content-box;
+	width:48px;height:48px;
+	padding:18px;
+	border-radius:22px;
+	background:var(--green-soft);
+	border:2px solid rgba(31,122,69,.45);
+	transition:transform .25s var(--ease-out),background .25s ease;
 }
-
-.social-icon:hover{
-	transform:scale(1.1);
-	background:rgba(142,224,138,.16);
-	border-color:rgba(142,224,138,.4);
+.social-icon:active img{transform:scale(.92)}
+@media (hover:hover){
+	.social-icon:hover img{transform:translateY(-3px);background:rgba(31,122,69,.3)}
 }
+.social-icon:focus-visible{outline:none}
+.social-icon:focus-visible img{outline:3px solid var(--gold);outline-offset:4px}
 
-.social-icon:focus{
-	outline:3px solid rgba(142,224,138,.3);
-	outline-offset:4px;
-}
-
-/* Desktop / larger screens */
+/* ---------- Compu ---------- */
 @media (min-width:900px){
-	.hero{min-height:100vh}
-	.video--desktop{display:block}
-	.video--mobile{display:none}
-	.hero__overlay{max-width:900px}
-	.hero__social .social{width:64px;height:64px}
-	.hero__social .social img{width:32px;height:32px}
-	.contact__social{
-		gap:3rem;
+	.hero__logo{width:280px}
+	.dock{margin-bottom:1.5rem}
+	.dock__icon{width:76px;height:76px;border-radius:22px}
+	.dock__icon svg{width:36px;height:36px}
+
+	.sheet__panel{
+		left:50%;top:50%;bottom:auto;right:auto;
+		width:min(640px,calc(100vw - 4rem));
+		max-height:min(80vh,720px);
+		border-radius:var(--radius);
+		box-shadow:0 30px 80px rgba(0,0,0,.7);
+		transform:translate(-50%,-46%) scale(.96);
+		opacity:0;
+		transition:transform .3s var(--ease-out),opacity .25s ease;
 	}
-	.social-icon{
-		width:120px;
-		height:120px;
-	}
-	.social-icon img{
-		width:64px;
-		height:64px;
-	}
+	.sheet.is-open .sheet__panel{transform:translate(-50%,-50%);opacity:1}
+	.sheet__head{cursor:default;touch-action:auto}
+	.sheet__grabber{display:none}
+	.sheet__head{padding-top:1.25rem}
+	.sheet__body{padding:.5rem 2.5rem 2.5rem}
 }
 
-/* Accessibility: focus states */
-a:focus{outline:3px solid rgba(142,224,138,.18);outline-offset:3px}
-
-/* Utility: data-driven parallax elements can transition smoothly */
-[data-parallax]{transition:transform .12s linear}
+@media (prefers-reduced-motion:reduce){
+	.hero__video{transition-duration:.4s}
+	.hero__logo,.dock__btn,.video-toggle,.hero__footer,.sheet__panel,.sheet::backdrop,.dock__icon,.social-icon img{
+		transition-duration:.01ms !important;
+	}
+}

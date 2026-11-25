@@ -1,96 +1,241 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
 <head>
 	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width,initial-scale=1" />
-	<title>Poncho Verde Ska Orquesta</title>
-	<link rel="stylesheet" href="style.css" />
+	<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+	<title>La Poncho Verde Ska Orquesta</title>
+	<meta name="description" content="La Poncho Verde Ska Orquesta: ska y reggae desde Corrientes, Argentina. Vientos, groove y alegría bien puesta." />
+	<meta name="theme-color" content="#000000" />
+	<meta name="color-scheme" content="dark" />
+
+	<!-- Instalable como app ("Agregar a la pantalla de inicio") -->
+	<link rel="manifest" href="manifest.webmanifest" />
+	<link rel="icon" href="assets/logo/favicon.ico" sizes="any" />
+	<link rel="icon" href="assets/logo/favicon-32.png" type="image/png" sizes="32x32" />
+	<link rel="apple-touch-icon" href="assets/logo/apple-touch-icon.png" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+	<meta name="apple-mobile-web-app-title" content="La Poncho" />
+
+	<!-- Open Graph / redes -->
+	<meta property="og:type" content="website" />
+	<meta property="og:locale" content="es_AR" />
+	<meta property="og:site_name" content="La Poncho Verde Ska Orquesta" />
+	<meta property="og:title" content="La Poncho Verde Ska Orquesta" />
+	<meta property="og:description" content="Ska y reggae con acento del litoral, desde Corrientes, Argentina." />
+	<meta property="og:url" content="https://nahv.github.io/laponcho/" />
+	<meta property="og:image" content="https://nahv.github.io/laponcho/assets/logo/og-image.jpg" />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta property="og:image:alt" content="Escudo de La Poncho Verde Ska Orquesta" />
+	<meta name="twitter:card" content="summary_large_image" />
+
+	<!-- Lo primero que se ve: logo del loader y poster del video -->
+	<link rel="preload" as="image" href="assets/logo/logo-512.webp" type="image/webp" />
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" />
+
+	<!-- CSS crítico del loader: inline para que aparezca antes que nada -->
+	<style>
+		html,body{margin:0;height:100%;background:#000}
+		.loader{
+			--beat:.4s; /* ~150 bpm, tempo de ska */
+			--sq:22px;
+			position:fixed;top:0;right:0;bottom:0;left:0;z-index:100; /* sin "inset": iOS < 14.1 no lo entiende */
+			display:grid;place-items:center;
+			background:radial-gradient(60% 45% at 50% 50%,rgba(31,122,69,.28),transparent 70%),#000;
+			color:#f5f3ee;overflow:hidden;
+			transition:opacity .6s ease,visibility 0s linear .6s;
+			/* red de seguridad sin JS: se va solo a los 10 s */
+			animation:loaderFailsafe 0s linear 10s forwards;
+		}
+		.loader.is-done{opacity:0;visibility:hidden;pointer-events:none}
+		@keyframes loaderFailsafe{to{opacity:0;visibility:hidden;pointer-events:none}}
+		.loader__checks{
+			position:absolute;left:0;right:0;height:calc(var(--sq)*2);
+			background:conic-gradient(#f5f3ee 25%,#000 0 50%,#f5f3ee 0 75%,#000 0) 0 0/calc(var(--sq)*2) calc(var(--sq)*2);
+			animation:skankSlide calc(var(--beat)*2) linear infinite;
+			transition:transform .6s cubic-bezier(.6,0,.4,1);
+		}
+		.loader__checks--top{top:max(6vh,env(safe-area-inset-top))}
+		.loader__checks--bottom{bottom:max(6vh,env(safe-area-inset-bottom));animation-direction:reverse}
+		/* se mueve a los saltos, en el contratiempo: el "chk" de la guitarra */
+		@keyframes skankSlide{
+			0%,25%{background-position-x:0}
+			40%,75%{background-position-x:var(--sq)}
+			90%,100%{background-position-x:calc(var(--sq)*2)}
+		}
+		.loader__stage{display:grid;justify-items:center;gap:1.25rem;text-align:center;padding:1rem}
+		.loader__logo{
+			display:block;width:min(64vw,300px);height:auto;aspect-ratio:1;
+			mix-blend-mode:lighten; /* el fondo negro del escudo se funde con el brillo verde */
+			animation:skankBob calc(var(--beat)*2) ease-in-out infinite;
+			transform-origin:50% 90%;
+			transition:transform .6s cubic-bezier(.2,.9,.2,1);
+		}
+		/* el escudo baila: se levanta en cada contratiempo y se mece de lado a lado */
+		@keyframes skankBob{
+			0%{transform:translateY(0) rotate(-3deg) scale(1.02,.98)}
+			25%{transform:translateY(-14px) rotate(0) scale(.99,1.02)}
+			50%{transform:translateY(0) rotate(3deg) scale(1.02,.98)}
+			75%{transform:translateY(-14px) rotate(0) scale(.99,1.02)}
+			100%{transform:translateY(0) rotate(-3deg) scale(1.02,.98)}
+		}
+		.loader__shadow{
+			width:min(40vw,180px);height:10px;margin-top:-1.5rem;border-radius:50%;
+			background:radial-gradient(closest-side,rgba(31,122,69,.55),transparent);
+			animation:skankShadow var(--beat) ease-in-out infinite;
+		}
+		@keyframes skankShadow{0%,100%{transform:scaleX(1);opacity:1}50%{transform:scaleX(.7);opacity:.5}}
+		.loader__count{display:flex}
+		.loader__count i+i{margin-left:.6rem} /* margen en vez de gap: flex gap no existe en iOS < 14.1 */
+		.loader__count i{
+			width:10px;height:10px;border-radius:50%;background:#1f7a45;
+			animation:countBeat calc(var(--beat)*4) steps(1) infinite;
+		}
+		.loader__count i:nth-child(2){animation-delay:var(--beat)}
+		.loader__count i:nth-child(3){animation-delay:calc(var(--beat)*2)}
+		.loader__count i:nth-child(4){animation-delay:calc(var(--beat)*3)}
+		@keyframes countBeat{0%{background:#e0a526;transform:scale(1.5)}25%,100%{background:#1f7a45;transform:scale(1)}}
+		.loader__text{
+			margin:0;min-height:1.5em;
+			font:600 .95rem/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+			letter-spacing:.04em;color:#f5f3ee;opacity:.85;
+		}
+		.loader.is-done .loader__logo{transform:scale(1.15)}
+		.loader.is-done .loader__checks--top{transform:translateY(-30vh)}
+		.loader.is-done .loader__checks--bottom{transform:translateY(30vh)}
+		.sr-only{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+		@media (prefers-reduced-motion:reduce){
+			.loader__checks,.loader__logo,.loader__shadow,.loader__count i{animation:none}
+			.loader{transition-duration:.2s}
+		}
+	</style>
+	<noscript><style>.loader{display:none}.logo-pending .hero__logo,.is-loading .dock__btn,.is-loading .video-toggle,.is-loading .hero__footer,.is-loading .hero__video{opacity:1;transform:none}</style></noscript>
+	<link rel="stylesheet" href="style.css?v=3" />
 </head>
-<body>
-	<header class="site-header" role="banner">
-	</header>
+<body class="is-loading logo-pending">
+	<!-- Loader: se queda hasta que el video realmente arranca (o 7 s como máximo) -->
+	<div class="loader" id="loader" role="status">
+		<span class="sr-only">Cargando La Poncho Verde Ska Orquesta…</span>
+		<div class="loader__checks loader__checks--top" aria-hidden="true"></div>
+		<div class="loader__stage" aria-hidden="true">
+			<picture>
+				<source srcset="assets/logo/logo-512.webp" type="image/webp" />
+				<img class="loader__logo" src="assets/logo/logo-512.png" width="512" height="512" alt="" />
+			</picture>
+			<div class="loader__shadow"></div>
+			<div class="loader__count"><i></i><i></i><i></i><i></i></div>
+			<p class="loader__text" id="loader-text">Afinando los vientos…</p>
+		</div>
+		<div class="loader__checks loader__checks--bottom" aria-hidden="true"></div>
+	</div>
 
-	<main>
-		<section class="hero" id="hero" aria-label="Poncho Verde Ska Orquesta hero">
-			<!-- Mobile vertical video: keep data-src so it only loads when we set it via JS -->
-			<video
-				class="video video--mobile"
-				data-src="assets/videos/mobile.mp4"
-				poster="assets/videos/mobile-poster.jpg"
-				playsinline muted autoplay loop preload="metadata"
-				aria-hidden="true"
-			></video>
+	<main class="hero" id="hero">
+		<video
+			class="hero__video"
+			id="hero-video"
+			poster="assets/videos/poster.jpg"
+			autoplay muted loop playsinline preload="auto"
+			disablepictureinpicture disableremoteplayback
+			aria-hidden="true"
+		>
+			<source src="assets/videos/hero.mp4" type="video/mp4" />
+		</video>
+		<script>
+			// Si la persona pidió menos movimiento, el video no arranca solo.
+			if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+				var v = document.getElementById('hero-video');
+				v.removeAttribute('autoplay');
+				v.preload = 'metadata';
+			}
+		</script>
+		<div class="hero__scrim" aria-hidden="true"></div>
 
-			<!-- Desktop horizontal video: data-src set, preload none until activated -->
-			<video
-				class="video video--desktop"
-				data-src="assets/videos/mobile.mp4"
-				poster="assets/videos/desktop-poster.jpg"
-				playsinline muted autoplay loop preload="none"
-				aria-hidden="true"
-			></video>
+		<header class="hero__top">
+			<h1 class="hero__title">
+				<picture>
+					<source srcset="assets/logo/logo-512.webp 512w, assets/logo/logo-1024.webp 1024w" sizes="(min-width: 900px) 280px, 52vw" type="image/webp" />
+					<img class="hero__logo" src="assets/logo/logo-512.png" srcset="assets/logo/logo-512.png 512w, assets/logo/logo-1024.png 1024w" sizes="(min-width: 900px) 280px, 52vw" width="512" height="512" alt="La Poncho Verde Ska Orquesta" />
+				</picture>
+			</h1>
+		</header>
 
-			<div class="hero__overlay">
-				<img class="band-logo" src="assets/icons/logo.png" alt="Poncho Verde logo" />
+		<button class="video-toggle" id="video-toggle" type="button" aria-label="Pausar video" aria-pressed="false">
+			<svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+			<svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>
+		</button>
 
-				<!--  scroll-down widget -->
-				<div id="scroll-down" aria-hidden="true">
-					<span id="scroll-title">Bajá</span>
-					<span class="arrow-down" aria-hidden="true"></span>
-				</div>
+		<nav class="dock" aria-label="Secciones">
+			<a class="dock__btn" href="#somos" data-sheet="somos">
+				<span class="dock__icon" aria-hidden="true">
+					<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M2.8 19.5c.6-3.4 3.2-5.5 6.2-5.5s5.6 2.1 6.2 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M16.2 13.9c2.6.2 4.4 2 4.9 4.6"/></svg>
+				</span>
+				<span class="dock__label">¿Quiénes somos?</span>
+			</a>
+			<a class="dock__btn" href="#contacto" data-sheet="contacto">
+				<span class="dock__icon" aria-hidden="true">
+					<svg viewBox="0 0 24 24"><path d="M20 12.2c0 4-3.6 7.3-8 7.3-1.2 0-2.3-.2-3.3-.6L4 20l1.2-3.6C4.4 15.2 4 13.7 4 12.2 4 8.2 7.6 5 12 5s8 3.2 8 7.2z"/><circle cx="8.6" cy="12.2" r=".6"/><circle cx="12" cy="12.2" r=".6"/><circle cx="15.4" cy="12.2" r=".6"/></svg>
+				</span>
+				<span class="dock__label">Contacto</span>
+			</a>
+		</nav>
+
+		<footer class="hero__footer">
+			<small>© Poncho Verde Ska Orquesta</small>
+			<small>Corrientes, Argentina</small>
+		</footer>
+	</main>
+
+	<!-- Hojas (bottom sheet en celu, panel centrado en compu) -->
+	<dialog class="sheet" id="somos" aria-labelledby="somos-title">
+		<div class="sheet__panel">
+			<div class="sheet__head" data-drag>
+				<span class="sheet__grabber" aria-hidden="true"></span>
+				<h2 class="sheet__title" id="somos-title">¿Quiénes somos?</h2>
+				<button class="sheet__close" type="button" data-close aria-label="Cerrar">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+				</button>
 			</div>
-		</section>
-
-		<!-- Scrollytelling demo sections -->
-		<section class="panel reveal" id="panel-1" data-speed="0.2">
-			<div class="container" >
-				<h2 style="text-align: center;">¿Quienes somos?</h2>
-				<p><strong>La Poncho Verde Ska Orquesta</strong> nace en Corrientes, Argentina, donde el calor no se discute y el ritmo se aprende antes que a caminar. 
-                    <br>
-               <!--      <br>
-                    Entre botellas, el río y las veredas que piden baile, esta orquesta armó su propio clima: viento, groove y alegría bien puesta.
-<br> -->
-<br>
-<strong>Somos una orquesta de ska y reggae con más aire que discurso:</strong> saxos, trompetas, trombones y algún viento más que aparece cuando menos lo esperás. 
-<br>
-A eso se suman contrabajo, batería, guitarra eléctrica y teclados,<strong> todos conspirando para que tu cuerpo se mueva incluso cuando la cabeza dice "mañana laburo".</strong>
-<br>
-<br>
-Nos gusta el pulso jamaiquino, pero con acento del litoral. 
-<br>
-<br>
-Tocamos para que la noche dure un poco más de lo planeado. No prometemos salvar al mundo, pero sí hacerte transpirar con estilo y sacarte al menos una preocupación durante el show.</p>
+			<div class="sheet__body">
+				<p><strong>La Poncho Verde Ska Orquesta</strong> nació un otoño en Corrientes, Argentina.</p>
+				<p>Somos una orquesta de ska y reggae con saxos, trompetas, trombones, contrabajo, batería, guitarra eléctrica y teclados, todos conspirando para hacer mover el esqueleto.</p>
+				<p>Pulso jamaiquino, <strong>con acento del litoral.</strong></p>
 			</div>
-		</section>
+		</div>
+	</dialog>
 
-		<section class="panel reveal" id="panel-3" data-speed="0.1">
-			<div class="container" style="text-align: center;">
-				<h2>Contacto</h2>
+	<dialog class="sheet" id="contacto" aria-labelledby="contacto-title">
+		<div class="sheet__panel">
+			<div class="sheet__head" data-drag>
+				<span class="sheet__grabber" aria-hidden="true"></span>
+				<h2 class="sheet__title" id="contacto-title">Contacto</h2>
+				<button class="sheet__close" type="button" data-close aria-label="Cerrar">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+				</button>
+			</div>
+			<div class="sheet__body sheet__body--center">
 				<p>Seguinos en nuestras redes</p>
-				
-				<!-- Social icons as app-like buttons -->
-				<nav class="contact__social" aria-label="Social media links">
-					<a class="social-icon social-icon--ig" href="https://www.instagram.com/laponchoband/" target="_blank" rel="noopener" aria-label="Instagram">
-						<img src="assets/icons/instagram.png" alt="Instagram" />
+				<nav class="contact__social" aria-label="Redes sociales">
+					<a class="social-icon" href="https://www.instagram.com/laponchoband/" target="_blank" rel="noopener">
+						<img src="assets/icons/instagram.png" alt="" width="56" height="56" loading="lazy" />
+						<span>Instagram</span>
 					</a>
-					<a class="social-icon social-icon--wa" href="https://wa.me/+5493731653999" target="_blank" rel="noopener" aria-label="WhatsApp">
-						<img src="assets/icons/whatsapp.png" alt="WhatsApp" />
+					<a class="social-icon" href="https://wa.me/+5493731653999" target="_blank" rel="noopener">
+						<img src="assets/icons/whatsapp.png" alt="" width="56" height="56" loading="lazy" />
+						<span>WhatsApp</span>
 					</a>
-					<a class="social-icon social-icon--yt" href="https://www.youtube.com/@laponchoband" target="_blank" rel="noopener" aria-label="YouTube">
-						<img src="assets/icons/youtube.png" alt="YouTube" />
+					<a class="social-icon" href="https://www.youtube.com/@laponchoband" target="_blank" rel="noopener">
+						<img src="assets/icons/youtube.png" alt="" width="56" height="56" loading="lazy" />
+						<span>YouTube</span>
 					</a>
 				</nav>
 			</div>
-		</section>
-	</main>
-
-	<footer class="site-footer" role="contentinfo">
-		<div class="container">
-			<small>© Poncho Verde Ska Orquesta</small>
-			<small>Corrientes, Argentina</small>
 		</div>
-	</footer>
+	</dialog>
 
-	<script src="main.js" defer></script>
+	<script src="main.js?v=3" defer></script>
 </body>
 </html>
