@@ -43,7 +43,7 @@
 		.loader{
 			--beat:.4s; /* ~150 bpm, tempo de ska */
 			--sq:22px;
-			position:fixed;inset:0;z-index:100;
+			position:fixed;top:0;right:0;bottom:0;left:0;z-index:100; /* sin "inset": iOS < 14.1 no lo entiende */
 			display:grid;place-items:center;
 			background:radial-gradient(60% 45% at 50% 50%,rgba(31,122,69,.28),transparent 70%),#000;
 			color:#f5f3ee;overflow:hidden;
@@ -89,7 +89,8 @@
 			animation:skankShadow var(--beat) ease-in-out infinite;
 		}
 		@keyframes skankShadow{0%,100%{transform:scaleX(1);opacity:1}50%{transform:scaleX(.7);opacity:.5}}
-		.loader__count{display:flex;gap:.6rem}
+		.loader__count{display:flex}
+		.loader__count i+i{margin-left:.6rem} /* margen en vez de gap: flex gap no existe en iOS < 14.1 */
 		.loader__count i{
 			width:10px;height:10px;border-radius:50%;background:#1f7a45;
 			animation:countBeat calc(var(--beat)*4) steps(1) infinite;
@@ -113,7 +114,7 @@
 		}
 	</style>
 	<noscript><style>.loader{display:none}.logo-pending .hero__logo,.is-loading .dock__btn,.is-loading .video-toggle,.is-loading .hero__footer,.is-loading .hero__video{opacity:1;transform:none}</style></noscript>
-	<link rel="stylesheet" href="style.css?v=2" />
+	<link rel="stylesheet" href="style.css?v=3" />
 </head>
 <body class="is-loading logo-pending">
 	<!-- Loader: se queda hasta que el video realmente arranca (o 7 s como máximo) -->
@@ -235,6 +236,6 @@
 		</div>
 	</dialog>
 
-	<script src="main.js?v=2" defer></script>
+	<script src="main.js?v=3" defer></script>
 </body>
 </html>

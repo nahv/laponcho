@@ -47,7 +47,7 @@ body{
 
 .hero__video{
 	position:absolute;
-	inset:0;
+	top:0;right:0;bottom:0;left:0; /* no "inset": iOS < 14.1 */
 	width:100%;
 	height:100%;
 	object-fit:cover;
@@ -62,7 +62,7 @@ body{
 /* oscurece arriba (logo) y abajo (botones) sin tapar al escenario */
 .hero__scrim{
 	position:absolute;
-	inset:0;
+	top:0;right:0;bottom:0;left:0; /* no "inset": iOS < 14.1 */
 	pointer-events:none;
 	background:
 		linear-gradient(180deg,rgba(0,0,0,.55) 0%,transparent 28%),
@@ -85,7 +85,8 @@ body{
 }
 
 /* Entrada del logo y los botones cuando se va el loader */
-.hero__logo,.dock__btn,.video-toggle,.hero__footer{
+.hero__logo,.dock__btn,.video-toggle,.hero__footer small + small{margin-left:.75rem} /* margen en vez de flex gap (iOS < 14.1) */
+.hero__footer{
 	transition:opacity .7s var(--ease-out),transform .7s var(--ease-out);
 }
 .logo-pending .hero__logo{
@@ -113,10 +114,10 @@ body{
 	position:relative;
 	z-index:2;
 	display:flex;
-	gap:clamp(1.5rem,8vw,3rem);
 	justify-content:center;
 	margin-bottom:1rem;
 }
+.dock__btn + .dock__btn{margin-left:clamp(1.5rem,8vw,3rem)} /* margen en vez de flex gap (iOS < 14.1) */
 .dock__btn{
 	display:grid;
 	justify-items:center;
@@ -176,7 +177,6 @@ body{
 	position:relative;
 	z-index:2;
 	display:flex;
-	gap:.75rem;
 	justify-content:center;
 	color:rgba(245,243,238,.55);
 	font-size:.72rem;
@@ -207,7 +207,7 @@ body{
 .sheet{
 	/* el <dialog> ocupa toda la pantalla; el panel es lo que se ve */
 	position:fixed;
-	inset:0;
+	top:0;right:0;bottom:0;left:0; /* no "inset": iOS < 14.1 */
 	width:100%;
 	height:100%;
 	max-width:none;
@@ -219,6 +219,15 @@ body{
 	color:var(--muted);
 	overflow:hidden;
 }
+/* Safari < 15.4 no conoce <dialog>: lo mostraría siempre. Lo ocultamos hasta que tenga [open]
+   y le damos fondo oscuro propio, porque ahí tampoco existe ::backdrop. */
+.sheet:not([open]){display:none}
+.sheet--fallback{
+	z-index:50;
+	background:rgba(0,0,0,0);
+	transition:background .3s ease;
+}
+.sheet--fallback.is-open{background:rgba(0,0,0,.6)}
 .sheet::backdrop{
 	background:rgba(0,0,0,.6);
 	opacity:0;
@@ -229,6 +238,7 @@ body{
 .sheet__panel{
 	position:absolute;
 	left:0;right:0;bottom:0;
+	max-height:88vh;
 	max-height:88dvh;
 	display:flex;
 	flex-direction:column;
@@ -257,6 +267,7 @@ body{
 	text-align:center;
 	touch-action:none; /* se arrastra con el dedo */
 	cursor:grab;
+	-webkit-user-select:none;
 	user-select:none;
 }
 .sheet__grabber{
@@ -308,12 +319,12 @@ body{
 /* Íconos de redes, estilo app */
 .contact__social{
 	display:flex;
-	gap:1.5rem;
 	justify-content:center;
 	flex-wrap:wrap;
-	margin:1.5rem 0 .5rem;
+	margin:1.5rem 0 0;
 }
 .social-icon{
+	margin:0 .5rem 1rem; /* margen en vez de flex gap (iOS < 14.1) */
 	display:grid;
 	justify-items:center;
 	gap:.5rem;

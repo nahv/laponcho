@@ -69,11 +69,17 @@
 			{ transform: `translate(${tx}px, ${ty}px) scale(${s})` }
 		], { duration: 1100, easing: 'cubic-bezier(.65,0,.25,1)', fill: 'forwards' });
 
-		anim.finished.then(() => {
+		const landed = () => {
 			land();
 			// el real aparece debajo; la copia se va cuando ya está entero (lighten + lighten = igual)
 			setTimeout(() => fly.remove(), 800);
-		}, () => { land(); fly.remove(); });
+		};
+		// Safari viejo tiene animate() pero no la promesa .finished
+		if (anim.finished && typeof anim.finished.then === 'function') {
+			anim.finished.then(landed, () => { land(); fly.remove(); });
+		} else {
+			anim.onfinish = landed;
+		}
 	}
 
 	/* ---------------- Video ---------------- */
@@ -146,7 +152,15 @@
 		if (!dialog || current === id) return;
 		if (current) hide(current, true);
 		current = id;
-		dialog.showModal();
+		if (typeof dialog.showModal === 'function') {
+			dialog.showModal();
+		} else {
+			// Safari < 15.4: sin <dialog> nativo, lo abrimos "a mano"
+			dialog.classList.add('sheet--fallback');
+			dialog.setAttribute('open', '');
+			const closeBtn = dialog.querySelector('[data-close]');
+			if (closeBtn) closeBtn.focus();
+		}
 		dialog.querySelector('.sheet__body').scrollTop = 0;
 		// doble rAF: que el navegador pinte el estado inicial antes de animar
 		requestAnimationFrame(() => requestAnimationFrame(() => dialog.classList.add('is-open')));
@@ -160,7 +174,10 @@
 		const panel = dialog.querySelector('.sheet__panel');
 		panel.style.transform = '';
 		const done = () => {
-			if (!dialog.classList.contains('is-open') && dialog.open) dialog.close();
+			if (!dialog.classList.contains('is-open') && dialog.hasAttribute('open')) {
+				if (typeof dialog.close === 'function') dialog.close();
+				else dialog.removeAttribute('open');
+			}
 			if (lastTrigger && !current) { lastTrigger.focus({ preventScroll: true }); lastTrigger = null; }
 		};
 		if (instant || reducedMotion) done();
@@ -206,6 +223,13 @@
 			lastTrigger = btn;
 			open(btn.dataset.sheet);
 		});
+	});
+
+	// Esc sin <dialog> nativo (el nativo avisa con el evento 'cancel')
+	document.addEventListener('keydown', (e) => {
+		if ((e.key === 'Escape' || e.key === 'Esc') && current && sheets[current].classList.contains('sheet--fallback')) {
+			requestClose();
+		}
 	});
 
 	Object.values(sheets).forEach((dialog) => {
@@ -259,6 +283,21 @@
 		head.addEventListener('pointermove', (e) => { if (dragging) move(e.clientY); });
 		head.addEventListener('pointerup', end);
 		head.addEventListener('pointercancel', end);
+
+		// iOS < 13 no tiene pointer events: lo mismo con touch
+		if (!window.PointerEvent) {
+			head.addEventListener('touchstart', (e) => {
+				if (!isSheetLayout() || e.target.closest('[data-close]')) return;
+				begin(e.touches[0].clientY);
+			}, { passive: true });
+			head.addEventListener('touchmove', (e) => {
+				if (!dragging) return;
+				e.preventDefault();
+				move(e.touches[0].clientY);
+			}, { passive: false });
+			head.addEventListener('touchend', end);
+			head.addEventListener('touchcancel', end);
+		}
 
 		// Desde el texto: solo si ya está arriba de todo y el dedo baja
 		let touchStartY = 0, armed = false;
