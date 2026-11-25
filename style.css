@@ -54,7 +54,10 @@ body{
 	object-position:50% 45%;
 	background:#000 url("assets/videos/poster.jpg") center/cover no-repeat;
 	pointer-events:none;
+	/* al irse el loader, el video sube de negro a su color original */
+	transition:opacity 2s cubic-bezier(.4,0,.2,1) .15s;
 }
+.is-loading .hero__video{opacity:0}
 
 /* oscurece arriba (logo) y abajo (botones) sin tapar al escenario */
 .hero__scrim{
@@ -345,6 +348,7 @@ body{
 }
 
 @media (prefers-reduced-motion:reduce){
+	.hero__video{transition-duration:.4s}
 	.hero__logo,.dock__btn,.video-toggle,.hero__footer,.sheet__panel,.sheet::backdrop,.dock__icon,.social-icon img{
 		transition-duration:.01ms !important;
 	}
