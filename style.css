@@ -88,7 +88,22 @@ body{
 .hero__logo,.dock__btn,.video-toggle,.hero__footer{
 	transition:opacity .7s var(--ease-out),transform .7s var(--ease-out);
 }
-.is-loading .hero__logo{opacity:0;transform:translateY(-18px) scale(.94)}
+.logo-pending .hero__logo{
+	opacity:0;
+	/* red de seguridad: si el JS no llega a "aterrizar" el escudo, aparece igual (como el loader a los 10 s) */
+	animation:logoFailsafe .7s ease 10s forwards;
+}
+@keyframes logoFailsafe{to{opacity:1}}
+/* el escudo del loader "vuela" hasta acá (ver flyLogo en main.js) */
+.logo-flyer{
+	position:fixed;
+	z-index:101; /* arriba del loader mientras este se desvanece */
+	margin:0;
+	pointer-events:none;
+	mix-blend-mode:lighten;
+	transform-origin:50% 90%; /* el mismo que .loader__logo */
+	will-change:transform;
+}
 .is-loading .dock__btn{opacity:0;transform:translateY(24px)}
 .is-loading .video-toggle,.is-loading .hero__footer{opacity:0}
 .dock__btn:nth-child(2){transition-delay:.08s}

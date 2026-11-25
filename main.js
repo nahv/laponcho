@@ -21,6 +21,7 @@
 		clearTimeout(failsafe);
 		const wait = Math.max(0, MIN_LOADER_MS - (performance.now() - started));
 		setTimeout(() => {
+			flyLogo();
 			loader.classList.add('is-done');
 			body.classList.remove('is-loading');
 			setTimeout(() => loader.remove(), 700);
@@ -28,6 +29,52 @@
 		}, wait);
 	}
 	const failsafe = setTimeout(finishLoading, MAX_LOADER_MS);
+
+	// El escudo del loader sube volando hasta su lugar en el hero (técnica FLIP):
+	// una copia fija arranca donde está el del loader (con su pose de baile del momento)
+	// y se transforma hasta coincidir con el del hero; ahí se muestra el real.
+	function flyLogo() {
+		const from = loader.querySelector('.loader__logo');
+		const to = document.querySelector('.hero__logo');
+		const land = () => body.classList.remove('logo-pending');
+		if (reducedMotion || !from || !to || typeof from.animate !== 'function') return land();
+
+		const pose = getComputedStyle(from).transform;
+		from.style.animation = 'none';
+		const a = from.getBoundingClientRect();
+		const b = to.getBoundingClientRect();
+		if (!a.width || !b.width) return land();
+
+		const fly = document.createElement('img');
+		fly.src = from.currentSrc || from.src;
+		fly.alt = '';
+		fly.className = 'logo-flyer';
+		Object.assign(fly.style, {
+			left: a.left + 'px', top: a.top + 'px',
+			width: a.width + 'px', height: a.height + 'px'
+		});
+		body.appendChild(fly);
+		from.style.visibility = 'hidden';
+
+		// Con origen O (50% 90%): p' = O + t + s·(p − O). Buscamos que la esquina de A caiga en la de B.
+		const s = b.width / a.width;
+		const ox = a.left + a.width * 0.5;
+		const oy = a.top + a.height * 0.9;
+		const tx = b.left - ox - s * (a.left - ox);
+		const ty = b.top - oy - s * (a.top - oy);
+
+		const anim = fly.animate([
+			{ transform: pose === 'none' ? 'none' : pose },
+			{ transform: `translate(${tx}px, ${ty}px) scale(${s * 1.04})`, offset: 0.8 },
+			{ transform: `translate(${tx}px, ${ty}px) scale(${s})` }
+		], { duration: 1100, easing: 'cubic-bezier(.65,0,.25,1)', fill: 'forwards' });
+
+		anim.finished.then(() => {
+			land();
+			// el real aparece debajo; la copia se va cuando ya está entero (lighten + lighten = igual)
+			setTimeout(() => fly.remove(), 800);
+		}, () => { land(); fly.remove(); });
+	}
 
 	/* ---------------- Video ---------------- */
 

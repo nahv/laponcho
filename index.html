@@ -112,10 +112,10 @@
 			.loader{transition-duration:.2s}
 		}
 	</style>
-	<noscript><style>.loader{display:none}.is-loading .hero__logo,.is-loading .dock__btn,.is-loading .video-toggle,.is-loading .hero__footer,.is-loading .hero__video{opacity:1;transform:none}</style></noscript>
-	<link rel="stylesheet" href="style.css" />
+	<noscript><style>.loader{display:none}.logo-pending .hero__logo,.is-loading .dock__btn,.is-loading .video-toggle,.is-loading .hero__footer,.is-loading .hero__video{opacity:1;transform:none}</style></noscript>
+	<link rel="stylesheet" href="style.css?v=2" />
 </head>
-<body class="is-loading">
+<body class="is-loading logo-pending">
 	<!-- Loader: se queda hasta que el video realmente arranca (o 7 s como máximo) -->
 	<div class="loader" id="loader" role="status">
 		<span class="sr-only">Cargando La Poncho Verde Ska Orquesta…</span>
@@ -235,6 +235,6 @@
 		</div>
 	</dialog>
 
-	<script src="main.js" defer></script>
+	<script src="main.js?v=2" defer></script>
 </body>
 </html>
