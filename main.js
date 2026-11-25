@@ -5,7 +5,6 @@
 	const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 	const body = document.body;
 	const loader = document.getElementById('loader');
-	const loaderText = document.getElementById('loader-text');
 	const video = document.getElementById('hero-video');
 	const toggle = document.getElementById('video-toggle');
 
@@ -16,25 +15,12 @@
 	const started = performance.now();
 	let loaded = false;
 
-	const phrases = [
-		'Afinando los vientos…',
-		'Cebando el mate…',
-		'Contando: un, dos, tres, cuatro…',
-		'Ya casi… ¡a skankear!'
-	];
-	let phraseIdx = 0;
-	const phraseTimer = reducedMotion ? null : setInterval(() => {
-		phraseIdx = (phraseIdx + 1) % phrases.length;
-		loaderText.textContent = phrases[phraseIdx];
-	}, 1600);
-
 	function finishLoading() {
 		if (loaded) return;
 		loaded = true;
 		clearTimeout(failsafe);
 		const wait = Math.max(0, MIN_LOADER_MS - (performance.now() - started));
 		setTimeout(() => {
-			if (phraseTimer) clearInterval(phraseTimer);
 			loader.classList.add('is-done');
 			body.classList.remove('is-loading');
 			setTimeout(() => loader.remove(), 700);
